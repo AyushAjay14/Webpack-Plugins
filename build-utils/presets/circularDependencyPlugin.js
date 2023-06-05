@@ -19,7 +19,6 @@ class CircularDependencyPlugin {
   apply(compiler) {
     let plugin = this
     let cwd = this.options.cwd
-
     compiler.hooks.compilation.tap(PluginTitle, (compilation) => {
       compilation.hooks.optimizeModules.tap(PluginTitle, (modules) => {
         if (plugin.options.onStart) {
@@ -28,6 +27,7 @@ class CircularDependencyPlugin {
         }
         for (let module of modules) {
             // console.log(module.resource , '\n');
+            // console.log(module.resource , ':' , module.dependencies);
             // fs.writeFileSync('moduleresource.txt' , module.resource+ '\n' , (err)=> console.log(err))
           const shouldSkip = (
             module.resource == null ||
@@ -85,14 +85,15 @@ class CircularDependencyPlugin {
 
     // Iterate over the current modules dependencies
     for (let dependency of currentModule.dependencies) {
-        // console.log(currentModule.resource , ': ' , dependency.constructor.name);
+        // console.log(dependency);
+        // console.log(currentModule.resource , ': ' , dependency);
+        // console.log(currentModule.resource , ':', dependency.constructor.name ,':' , dependency.request);
       if (
         dependency.constructor &&
         dependency.constructor.name === 'CommonJsSelfReferenceDependency'
       ) {
         continue
       }
-
       let depModule = null
       if (compilation.moduleGraph) {
         // handle getting a module for webpack 5

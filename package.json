@@ -4,11 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "webpack": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack -- --env mode=development",
     "webpack-dev-server": "webpack-dev-server",
     "dev": "webpack -- --env mode=development",
-    "dev:analyze": "npm run build -- --env presets=analyze"
+    "dev:analyze": "npm run build -- --env presets=analyze",
+    "debugthis": "node --inspect --inspect-brk ./build-utils/presets/webpackPlugin.js"
   },
   "author": "",
   "license": "ISC",

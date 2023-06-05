@@ -1,1 +1,0 @@
-document.write("I am dependent.js");

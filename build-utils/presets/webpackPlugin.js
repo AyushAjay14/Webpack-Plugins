@@ -3,13 +3,12 @@ const path = require('path');
 class PrintChunksPlugin{
     apply(compiler){
         compiler.hooks.compilation.tap("MyFirstPlugin" , (compilation)=>{
-            debugger;
             compilation.hooks.finishModules.tap("PrintChunkss" , (modules)=>{
                 const {_moduleMap : moduleMap } = compilation.moduleGraph;
                 let module;
                   module = Array.from(moduleMap)[0][0];
                   const func = () =>{
-                    console.log(module.resource);
+                    // console.log(module.resource);
                     const corrGraphModule = moduleMap.get(module);
                     // console.log(corrGraphModule.incomingConnections.size);
                     if(corrGraphModule.incomingConnections.size === 0 ) {
@@ -17,7 +16,7 @@ class PrintChunksPlugin{
                       return ;
                     }
                     const [parent] = corrGraphModule.incomingConnections;
-                    console.log(parent.module.resource);
+                    // console.log(parent.module.resource);
                     func(parent.module);
                   }
                   // func(module);

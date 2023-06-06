@@ -1,0 +1,39 @@
+
+> webpack_demo@1.0.0 dev
+> webpack -- --env mode=development
+
+undefined
+undefined
+undefined
+undefined
+undefined
+undefined
+undefined
+undefined
+undefined
+undefined
+undefined
+undefined
+undefined
+undefined
+undefined
+undefined
+undefined
+undefined
+asset a.js 28.4 KiB [compared for emit] (name: a)
+runtime modules 972 bytes 5 modules
+cacheable modules 10.9 KiB
+  modules by path ./src/*.js 1.17 KiB
+    ./src/a.js 114 bytes [built] [code generated]
+    ./src/b.js 169 bytes [built] [code generated]
+    ./src/e.js 115 bytes [built] [code generated]
+    + 5 modules
+  modules by path ./node_modules/ 8.15 KiB
+    modules by path ./node_modules/style-loader/dist/runtime/*.js 5.84 KiB 6 modules
+    modules by path ./node_modules/css-loader/dist/runtime/*.js 2.31 KiB
+      ./node_modules/css-loader/dist/runtime/noSourceMaps.js 64 bytes [built] [code generated]
+      ./node_modules/css-loader/dist/runtime/api.js 2.25 KiB [built] [code generated]
+  modules by path ./*.css 1.59 KiB
+    ./app.css 1.1 KiB [built] [code generated]
+    ./node_modules/css-loader/dist/cjs.js!./app.css 501 bytes [built] [code generated]
+webpack 5.85.0 compiled successfully in 875 ms

@@ -4,7 +4,7 @@ class WatchRunPlugin {
     }
     apply(compiler) {
         compiler.hooks.watchRun.tap('WatchRun', (comp) => {
-
+            
         });
     }
     getChangedFile(compiler) {

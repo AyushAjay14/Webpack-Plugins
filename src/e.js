@@ -1,6 +1,6 @@
 import {bFunc} from './b'
 
-// bFunc();
+bFunc();
 export const efunc = () =>{
     console.log("this is e func");
 }

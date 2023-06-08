@@ -2,34 +2,17 @@
 > webpack_demo@1.0.0 dev
 > webpack -- --env mode=development
 
-./b
-./e
-../app.css
-./b1
-./c
-./b
-!./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js
-!./node_modules/style-loader/dist/runtime/styleDomAPI.js
-!./node_modules/style-loader/dist/runtime/insertBySelector.js
-!./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js
-!./node_modules/style-loader/dist/runtime/insertStyleElement.js
-!./node_modules/style-loader/dist/runtime/styleTagTransform.js
-!!./node_modules/css-loader/dist/cjs.js!./app.css
-./c1
-./d
-./c1
-./node_modules/css-loader/dist/runtime/noSourceMaps.js
-./node_modules/css-loader/dist/runtime/api.js
-./d1
-./d1
-asset a.js 28.4 KiB [compared for emit] (name: a)
-runtime modules 972 bytes 5 modules
-cacheable modules 10.9 KiB
-  modules by path ./src/*.js 1.17 KiB
-    ./src/a.js 117 bytes [built] [code generated]
+{}
+asset a.js 38.7 KiB [compared for emit] (name: a)
+asset index.html 5.35 KiB [compared for emit]
+asset src_footer_js.js 1.01 KiB [compared for emit]
+runtime modules 8.12 KiB 12 modules
+cacheable modules 11.2 KiB
+  modules by path ./src/*.js 1.49 KiB
+    ./src/a.js 307 bytes [built] [code generated]
     ./src/b.js 169 bytes [built] [code generated]
     ./src/e.js 111 bytes [built] [code generated]
-    + 5 modules
+    + 6 modules
   modules by path ./node_modules/ 8.15 KiB
     modules by path ./node_modules/style-loader/dist/runtime/*.js 5.84 KiB 6 modules
     modules by path ./node_modules/css-loader/dist/runtime/*.js 2.31 KiB
@@ -38,4 +21,159 @@ cacheable modules 10.9 KiB
   modules by path ./*.css 1.59 KiB
     ./app.css 1.1 KiB [built] [code generated]
     ./node_modules/css-loader/dist/cjs.js!./app.css 501 bytes [built] [code generated]
-webpack 5.85.0 compiled successfully in 1440 ms
+
+ERROR in SyntaxError: unknown: 'with' in strict mode. (1:148)
+  
+  > 1 | var _ = __non_webpack_require__("/Users/ayushajay/Desktop/Webpack_demo/n  ode_modules/lodash/lodash.js");module.exports = function (templateParams) { wi  th(templateParams) {return (function(data) {
+      |                                                                                                                                                       ^
+    2 | var __t, __p = '';
+    3 | __p += '<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="utf-8">\n      <title>' +
+    4 | ((__t = ( htmlWebpackPlugin.options.title )) == null ? '' : __t) +
+  
+  - index.js:63 instantiate
+    [Webpack_demo]/[@babel]/parser/lib/index.js:63:32
+  
+  - index.js:358 constructor
+    [Webpack_demo]/[@babel]/parser/lib/index.js:358:12
+  
+  - index.js:3255 Parser.raise
+    [Webpack_demo]/[@babel]/parser/lib/index.js:3255:19
+  
+  - index.js:13110 Parser.parseWithStatement
+    [Webpack_demo]/[@babel]/parser/lib/index.js:13110:12
+  
+  - index.js:12684 Parser.parseStatementContent
+    [Webpack_demo]/[@babel]/parser/lib/index.js:12684:21
+  
+  - index.js:12584 Parser.parseStatementLike
+    [Webpack_demo]/[@babel]/parser/lib/index.js:12584:17
+  
+  - index.js:12564 Parser.parseStatementListItem
+    [Webpack_demo]/[@babel]/parser/lib/index.js:12564:17
+  
+  - index.js:13185 Parser.parseBlockOrModuleBlockBody
+    [Webpack_demo]/[@babel]/parser/lib/index.js:13185:61
+  
+  - index.js:13178 Parser.parseBlockBody
+    [Webpack_demo]/[@babel]/parser/lib/index.js:13178:10
+  
+  - index.js:13166 Parser.parseBlock
+    [Webpack_demo]/[@babel]/parser/lib/index.js:13166:10
+  
+  - index.js:11947 Parser.parseFunctionBody
+    [Webpack_demo]/[@babel]/parser/lib/index.js:11947:24
+  
+  - index.js:11933 Parser.parseFunctionBodyAndFinish
+    [Webpack_demo]/[@babel]/parser/lib/index.js:11933:10
+  
+  - index.js:13316 
+    [Webpack_demo]/[@babel]/parser/lib/index.js:13316:12
+  
+  - index.js:12257 Parser.withSmartMixTopicForbiddingContext
+    [Webpack_demo]/[@babel]/parser/lib/index.js:12257:14
+  
+  - index.js:13315 Parser.parseFunction
+    [Webpack_demo]/[@babel]/parser/lib/index.js:13315:10
+  
+  - index.js:11412 Parser.parseFunctionOrFunctionSent
+    [Webpack_demo]/[@babel]/parser/lib/index.js:11412:17
+  
+  - index.js:11185 Parser.parseExprAtom
+    [Webpack_demo]/[@babel]/parser/lib/index.js:11185:21
+  
+  - index.js:10890 Parser.parseExprSubscripts
+    [Webpack_demo]/[@babel]/parser/lib/index.js:10890:23
+  
+  - index.js:10873 Parser.parseUpdate
+    [Webpack_demo]/[@babel]/parser/lib/index.js:10873:21
+  
+  - index.js:10849 Parser.parseMaybeUnary
+    [Webpack_demo]/[@babel]/parser/lib/index.js:10849:23
+  
+  - index.js:10687 Parser.parseMaybeUnaryOrPrivate
+    [Webpack_demo]/[@babel]/parser/lib/index.js:10687:61
+  
+  - index.js:10692 Parser.parseExprOps
+    [Webpack_demo]/[@babel]/parser/lib/index.js:10692:23
+  
+  - index.js:10669 Parser.parseMaybeConditional
+    [Webpack_demo]/[@babel]/parser/lib/index.js:10669:23
+  
+  - index.js:10630 Parser.parseMaybeAssign
+    [Webpack_demo]/[@babel]/parser/lib/index.js:10630:21
+  
+  - index.js:10656 Parser.parseMaybeAssign
+    [Webpack_demo]/[@babel]/parser/lib/index.js:10656:25
+  
+  - index.js:10584 Parser.parseExpressionBase
+    [Webpack_demo]/[@babel]/parser/lib/index.js:10584:23
+  
+  - index.js:10580 
+    [Webpack_demo]/[@babel]/parser/lib/index.js:10580:39
+  
+  - index.js:12275 Parser.allowInAnd
+    [Webpack_demo]/[@babel]/parser/lib/index.js:12275:16
+  
+  - index.js:10580 Parser.parseExpression
+    [Webpack_demo]/[@babel]/parser/lib/index.js:10580:17
+  
+  - index.js:12733 Parser.parseStatementContent
+    [Webpack_demo]/[@babel]/parser/lib/index.js:12733:23
+  
+  - index.js:12584 Parser.parseStatementLike
+    [Webpack_demo]/[@babel]/parser/lib/index.js:12584:17
+  
+  - index.js:12561 Parser.parseModuleItem
+    [Webpack_demo]/[@babel]/parser/lib/index.js:12561:17
+  
+  - index.js:13185 Parser.parseBlockOrModuleBlockBody
+    [Webpack_demo]/[@babel]/parser/lib/index.js:13185:36
+  
+  - index.js:13178 Parser.parseBlockBody
+    [Webpack_demo]/[@babel]/parser/lib/index.js:13178:10
+  
+  - index.js:12460 Parser.parseProgram
+    [Webpack_demo]/[@babel]/parser/lib/index.js:12460:10
+  
+  - index.js:12450 Parser.parseTopLevel
+    [Webpack_demo]/[@babel]/parser/lib/index.js:12450:25
+  
+  - index.js:14347 Parser.parse
+    [Webpack_demo]/[@babel]/parser/lib/index.js:14347:10
+  
+  - index.js:14388 parse
+    [Webpack_demo]/[@babel]/parser/lib/index.js:14388:38
+  
+  - index.js:41 parser
+    [Webpack_demo]/[@babel]/core/lib/parser/index.js:41:34
+  
+  - parser.next
+  
+  - normalize-file.js:64 normalizeFile
+    [Webpack_demo]/[@babel]/core/lib/transformation/normalize-file.js:64:38
+  
+  - normalizeFile.next
+  
+  - index.js:21 run
+    [Webpack_demo]/[@babel]/core/lib/transformation/index.js:21:50
+  
+  - run.next
+  
+  - transform.js:22 transform
+    [Webpack_demo]/[@babel]/core/lib/transform.js:22:41
+  
+  - transform.next
+  
+  - index.js:251 evaluateSync
+    [Webpack_demo]/[gensync]/index.js:251:28
+  
+  - index.js:89 sync
+    [Webpack_demo]/[gensync]/index.js:89:14
+  
+  - rewrite-stack-trace.js:46 stopHiding - secret - don't use this - v1
+    [Webpack_demo]/[@babel]/core/lib/errors/rewrite-stack-trace.js:46:12
+  
+  - transform.js:36 Object.transform
+    [Webpack_demo]/[@babel]/core/lib/transform.js:36:80
+
+webpack 5.85.0 compiled with 1 error in 1614 ms

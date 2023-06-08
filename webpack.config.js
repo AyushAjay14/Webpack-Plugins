@@ -17,7 +17,7 @@ module.exports = ({mode , presets}= {mode: "none" , presets:[]})=>{
           allowedHosts: 'all',
         },
         entry: {
-          a : './src/a.js'
+          bundle : './parsed/BabelTraverse.js'
         },
       output: {
           filename: "[name].js"
@@ -43,7 +43,7 @@ module.exports = ({mode , presets}= {mode: "none" , presets:[]})=>{
       plugins: [new CircularDependencyPlugin({ exclude: /a\.js|node_modules/, onStart({compilation}){
         // fs.writeFile('compilation.txt' , compilation , (err)=> console.log(err));
         // console.log("compilation has started: " , compilation);
-      }})  , new funcTofuncPlugin() , new astPlugin()]
+      }})  , new astPlugin() , new HtmlWebpackPlugin() ]
   },
   // ModeConfig(mode),
   // PresetConfig({mode , presets})

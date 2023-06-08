@@ -1,0 +1,13 @@
+{
+  type: 'Identifier',
+  span: { start: 10, end: 15, ctxt: 0 },
+  value: 'bFunc',
+  optional: false
+}
+null
+{
+  imports: {
+    './b': { imported: 'bFunc', local: 'bff' },
+    './e': { imported: undefined, local: 'efunc' }
+  }
+}

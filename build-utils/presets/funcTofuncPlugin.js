@@ -28,7 +28,7 @@ class funcTofuncPlugin {
         if (visitedMap.get(module)) return;
         visitedMap.set(module, true);
         for (let dependency of module.dependencies) {
-            if (previousDependency === null) {
+            if (previousDependency === null) { // means it is the Root Module
                 if (dependency instanceof require('webpack/lib/dependencies/HarmonyImportSpecifierDependency') || dependency instanceof require('webpack/lib/dependencies/ImportDependency')) {
                     rootOutgoingConnections.push(dependency.ids.at(-1));
                     this.dfsFunction(compilation, compilation.moduleGraph.getModule(dependency), dependency.ids.at(-1), DepMatrix, rootOutgoingConnections, visitedMap);

@@ -1,23 +1,15 @@
-
-const PLUGIN_NAME = "ASTPlugin";
-
+const babel = require('@babel/core');
+// const babelPlugin = require('./babelPlugin')
 class astPlugin {
     apply(compiler) {
-        compiler.hooks.normalModuleFactory.tap('MyPlugin', (factory) => {
-            factory.hooks.parser
-              .for('javascript/auto')
-              .tap('MyPlugin', (parser, options) => {
-                // parser.hooks.evaluate.for('FunctionExpression').tap('MyPlugin', (expression) => {
-                //     console.log(expression);
-                //   });
-                parser.hooks.importSpecifier.tap(
-                    'MyPlugin',
-                    (statement, source, exportName, identifierName) => {
-                    //   console.log(source , exportName , identifierName)
-                    }
-                  );
-              });
-          });
+        compiler.hooks.compilation.tap('MyPlugin', (compilation) => {
+            compilation.hooks.finishModules.tap("Myplugin" , (modules) =>{
+                for(let module of modules ){
+                    // console.log(module._source._value);
+                    // babelPlugin.getAST(module._source._value);
+                }
+            })
+        });
     }
 }
 

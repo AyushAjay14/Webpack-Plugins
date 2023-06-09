@@ -8,6 +8,8 @@ class Visitor {
         this.alltopOrderFunctions = {};
         this.source ;
         this.allVariables = {};
+        this.parent = null;
+        this.currentFunction;
     }
     getImports(){
         return this.allImports;
@@ -17,6 +19,24 @@ class Visitor {
     }
     getVariables(){
         return this.allVariables;
+    }
+    recursiveFunc(parent , currentFunction , obj ){
+        if(parent === null || parent === undefined){
+            this.alltopOrderFunctions[currentFunction] = {};
+            return ;
+        }
+        for(let [key , value] of Object.entries(obj)){
+            if(key === parent){
+                // obj[parent] = currentFunction;
+                obj[parent][currentFunction] = {};
+                this.parent = null;
+                return ;
+            }
+            this.parent = null;
+            // console.log(parent , currentFunction)
+            this.recursiveFunc(parent , currentFunction , obj[key])
+        }
+        return;
     }
     visitProgram(n) {
         switch (n.type) {
@@ -235,9 +255,15 @@ class Visitor {
         return block;
     }
     visitStatements(stmts) {
+        // if(stmts.length === 0) this.parent = null;
         return stmts.map(this.visitStatement.bind(this));
     }
     visitStatement(stmt) {
+        if(stmt.type === "FunctionDeclaration"){
+            this.parent = this.currentFunction;
+            this.currentFunction = stmt.identifier.value;
+            console.log(this.parent , this.currentFunction);
+        }
         switch (stmt.type) {
             case "ClassDeclaration":
             case "FunctionDeclaration":
@@ -563,9 +589,13 @@ class Visitor {
         }
     }
     visitFunctionDeclaration(decl) {
+        this.currentFunction = decl.identifier.value;
         decl.identifier = this.visitIdentifier(decl.identifier);
-        this.alltopOrderFunctions[decl.identifier.value] = {};
+        // console.log(this.parent , this.currentFunction);
+        this.recursiveFunc(this.parent , this.currentFunction , this.alltopOrderFunctions)
+        this.parent = null;
         decl = this.visitFunction(decl);
+        this.parent = null;
         return decl;
     }
     visitClassDeclaration(decl) {
@@ -711,10 +741,11 @@ class Visitor {
         n.params.forEach(param => {
             params.push(param.pat.value);
         });
-        this.alltopOrderFunctions[n.identifier.value] = {...this.alltopOrderFunctions[n.identifier.value] , params}
+        // this.alltopOrderFunctions[n.identifier.value] = {...this.alltopOrderFunctions[n.identifier.value] , params}
         if (n.body) {
             n.body = this.visitBlockStatement(n.body);
         }
+        else this.parent = null;
         n.returnType = this.visitTsTypeAnnotation(n.returnType);
         n.typeParameters = this.visitTsTypeParameterDeclaration(n.typeParameters);
         return n;

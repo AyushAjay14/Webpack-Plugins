@@ -1,7 +1,7 @@
 const swc = require('@swc/core')
 const fs = require('fs');
 const path = require('path');
-const baseDirectory = __dirname;
+const baseDirectory = __dirname + '/../src/';
 // console.log(baseDirectory)
 fs.readdir(baseDirectory, (err, files) => {
     files.forEach((file) => getAST(file))

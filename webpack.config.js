@@ -2,6 +2,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 // const PresetConfig = require('./build-utils/loadPresets');
 // const ModeConfig = (env) => require(`./build-utils/webpack.${env}`)(env);
 const astPlugin = require("./build-utils/presets/astPlugin")
+const webpackPlugin = require('./build-utils/presets/webpackPlugin')
 const {merge} = require('webpack-merge');
 const deadcodePlugin = require("./build-utils/presets/deadCodePlugin");
 const watchChangePlugin = require('./build-utils/presets/watchChangesPlugin');
@@ -17,7 +18,7 @@ module.exports = ({mode , presets}= {mode: "none" , presets:[]})=>{
           allowedHosts: 'all',
         },
         entry: {
-          bundle : './parsed/BabelTraverse.js'
+          bundle : '/src/a.js'
         },
       output: {
           filename: "[name].js"
@@ -43,7 +44,7 @@ module.exports = ({mode , presets}= {mode: "none" , presets:[]})=>{
       plugins: [new CircularDependencyPlugin({ exclude: /a\.js|node_modules/, onStart({compilation}){
         // fs.writeFile('compilation.txt' , compilation , (err)=> console.log(err));
         // console.log("compilation has started: " , compilation);
-      }})  , new astPlugin() , new HtmlWebpackPlugin() ]
+      }}),  new webpackPlugin()]
   },
   // ModeConfig(mode),
   // PresetConfig({mode , presets})

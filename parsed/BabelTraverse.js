@@ -7,6 +7,6 @@ const data = fs.readFileSync(path , { encoding: 'utf8', flag: 'r' });
 swc.parse(data).then((module) => {
   visitor.visitProgram(module)
   const obj = {imports: visitor.getImports() , functionDecleration: visitor.getFunctions() , variableDecleration: visitor.getVariables()}
-  console.log(obj)
+  console.log(obj);
   fs.writeFileSync(__dirname + '/../ast/ast-a.json' , JSON.stringify(obj) );
 })

@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Visitor = void 0;
 const {Visitor} = require("@swc/core/Visitor")
-class myVisitor extends Visitor{
+class newVisitor extends Visitor{
     constructor(){
         super();
         this.globalScopes = {};
@@ -10,7 +7,7 @@ class myVisitor extends Visitor{
         this.allFunctionDeclarations = {};
         this.allVariableDeclarations = {};
         this.source;
-        this.parent = {};
+        this.parent = null;
         this.currentFunction;
         this.Export = {isExport: false , typeOfExport: null};
         this.ExpressionStatments = {};
@@ -19,13 +16,10 @@ class myVisitor extends Visitor{
         this.globalScopes = {'ImportDeclarations' : this.allImports , 'FunctionDeclarations': this.allFunctionDeclarations , 'VariableDeclerations': this.allVariableDeclarations , 'ExpressionStatements': this.ExpressionStatments};
         return this.globalScopes;
     }
-    setIndex(){
-        this.index = 0;
-    }
     visitImportDeclaration(n){
         this.allImports[n.source.value] = {};
         this.source = n.source.value;
-        return ;
+        super.visitImportDeclaration(n);
     }
     visitImportDefaultSpecifier(node) {
         this.globalScopes['ImportDeclarations'][node.source.value] = {local : node.local.value}
@@ -34,7 +28,7 @@ class myVisitor extends Visitor{
     }
     visitImportNamespaceSpecifier(node) {
         this.globalScopes['ImportDeclarations'][node.source.value] = {local : node.local.value}
-        return ;
+        return;
     }
     visitImportDefaultSpecifier(node) {
         this.globalScopes['ImportDeclarations'][node.source.value] = {local : node.local.value};
@@ -45,7 +39,7 @@ class myVisitor extends Visitor{
         if (node.imported) {
             this.allImports[this.source] = {...this.allImports[this.source] , imported : node.imported.value}
         }
-        return ;
+        return;
     }
     visitModuleItem(n){
         this.Export.typeOfExport = n.type;
@@ -82,5 +76,5 @@ class myVisitor extends Visitor{
         return;
     }
 }
-exports.Visitor = myVisitor;
-exports.default = myVisitor;
+exports.newVisitor = newVisitor;
+exports.default = newVisitor;

@@ -4,17 +4,18 @@ import '../app.css'
 const getFooter = () => import('./footer')
 // const getColor = (color) => import(`/color-styles/${color}.js`);
 console.log('A');
-function testFunc(randomparam){
+export function testFunc(randomparam){
     function testFunc1(randomparam1){
         function testFunc2(randomparam2){
         
         }
     }
 }
-
-//  function test2Func(){
-//  }
-const fatArrow = () =>{
+testFunc();
+ function test2Func(){
+    testFunc();
+ }
+export const fatArrow = () =>{
     
 }
 const button = document.createElement("button");

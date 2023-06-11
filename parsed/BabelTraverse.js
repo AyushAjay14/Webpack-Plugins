@@ -9,6 +9,7 @@ swc.parse(data).then((module) => {
     visitor.visitModuleItem(decl);
   }
   const globalScopes = visitor.getGlobalScopes();
+  console.log(globalScopes)
   const globalScopeArr = {};
   globalScopeArr.FunctionCalls = [];
   for(let key of globalScopes.ExpressionStatements.CallExpression){

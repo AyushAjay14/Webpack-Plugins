@@ -60,7 +60,8 @@ class newVisitor extends Visitor{
         }
         else this.allFunctionDeclarations[declr.identifier.value] = {};
         this.currentFunction = declr.identifier.value;
-        return ;
+        // if(this.parent) return;
+        // this.parent = this.source;
     }
     visitVariableDeclarator(n) {
         if(this.Export.isExport){

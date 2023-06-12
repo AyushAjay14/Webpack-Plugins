@@ -23,12 +23,13 @@ class RelationClass extends Visitor{
     }
     visitVariableDeclarator(n){
         if(n.init.type === 'CallExpression'){   // case - const z = y() calling global function through const z
+            // console.log(n)
             if(this.callExpression.includes(n.init.callee.value)){   
                 if(!this.scopeVariables[n.id.value]) this.scopeVariables[n.id.value] = [];
                 this.scopeVariables[n.id.value].push(n.init.callee.value);
             }
         }
-        if(this.parent) this.scopeVariables[this.parent].push(n.id.value);
+        // if(this.parent) this.scopeVariables[this.parent].push(n.id.value);
         super.visitVariableDeclarator(n)
     }
     visitIdentifier(n){  // if a global variable is change inside any function To add - local Scope 
@@ -39,7 +40,6 @@ class RelationClass extends Visitor{
     }
     visitExpression(n) {
         if(!this.parentVariable && n.left) {  // case => x = {f : func()}
-            console.log(n)
             this.parentVariable = n.left.value;
             this.scopeVariables[this.parentVariable] = [];
         }

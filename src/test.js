@@ -2,8 +2,13 @@ function f(){
 }
 const x = 5;
 function y(){
-    x = 5;
-    f();
+    function j(){
+    }
 }
-y();
+
+// const z = y(x);
+x = y();
 x = 10;
+x = {
+    f : f()
+};

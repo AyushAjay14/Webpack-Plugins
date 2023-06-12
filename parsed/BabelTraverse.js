@@ -23,9 +23,9 @@ const callExpression = [] , assignmentExpression = [] , functionDeclaration = []
 async function getExprssions(){
   let module = await swc.parse(data);
   for(let exp of module.body){
-    if(exp.type === 'ExpressionStatement') await getExpressions(exp.expression , callExpression , assignmentExpression , functionDeclaration);
-    else if(exp.type === 'FunctionDeclaration') await getFunctionDeclaration(exp, callExpression , assignmentExpression , functionDeclaration)
-    else if(exp.type==="VariableDeclaration") await getVariableDeclaration(exp, callExpression , assignmentExpression , functionDeclaration);
+    if(exp.type === 'ExpressionStatement') getExpressions(exp.expression , callExpression , assignmentExpression , functionDeclaration);
+    else if(exp.type === 'FunctionDeclaration') getFunctionDeclaration(exp, callExpression , assignmentExpression , functionDeclaration)
+    else if(exp.type==="VariableDeclaration") getVariableDeclaration(exp, callExpression , assignmentExpression , functionDeclaration);
   }
   console.log(callExpression ,assignmentExpression , functionDeclaration)
   module = await swc.parse(data);

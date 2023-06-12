@@ -1,7 +1,7 @@
 function f(){
 }
 const x = 5;
-function y(){
+function y(x){
     function j(){
         x = 10;
     }

@@ -1,18 +1,38 @@
-function f(){
+import {f} from './a.js'
+let v;
+function x(){
+    let var1 = 10;
+    f();
 }
-const x = 5;
-function y(x){
-    function j(){
-        x = 10;
+let kc = 10;
+function y(kc){
+    let x = 10;
+    kc+=10;
+    function z(){
+        let v =10;
+        x+=10;
+        let karN = 1;
+        arrow();
     }
+    v+=1;
 }
-
-const z = y();
-x = 10;
-x = {
-    a : {
-        b:{
-            f: f()
-        }
-    }
+export function exp(x){
+    let var2 = 10;
+    x();
+    y=10;
+    kc();
+}
+let arrow = ()=>{
+    y();
+    kc+=10;
 };
+let abcd = function(){
+
+    x=y;
+}
+y();
+
+
+let xxx = ()=>{
+    x();
+}

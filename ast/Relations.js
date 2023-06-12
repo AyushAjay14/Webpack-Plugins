@@ -1,70 +1,88 @@
 const { Visitor } = require('@swc/core/Visitor')
-
+const { getLocalVariables } = require('./getScope')
 class RelationClass extends Visitor {
-    constructor(callExpression, assignmentExpression) {
+    constructor(globalScopes) {
         super();
+        this.currentGlobalScope = new Set(globalScopes);
+        this.funcStack = [];
         this.parent = null;
-        this.parentVariable = null;
-        this.currentFuntionScope = { params: [], variables: [], name: null };
-        this.callExpression = callExpression;
-        this.assignmentExpression = assignmentExpression;
         this.scopeVariables = {};
+        this.scopeVariables = {};
+        this.globalParams = new Set();
     }
     getScopes() {
         return this.scopeVariables
     }
-    visitFunctionDeclaration(decl) {  // declaring parent function and then after its scope ends removing parent
-        this.currentFuntionScope.name = decl.identifier.value;
-        this.currentFuntionScope.params = this.getParams(decl.params);
-        if (!this.parent) {
-            this.parent = decl.identifier.value;
-            this.scopeVariables[this.parent] = [];
+    visitBlockStatement(block) {
+        let localvar = getLocalVariables(block.stmts);
+        let stack = [];
+        for (let scope of localvar) {
+            if (this.currentGlobalScope.has(scope)) {
+                this.currentGlobalScope.delete(scope);
+                stack.push(scope);
+            }
         }
+        for (let scope of this.globalParams) {
+            if (this.currentGlobalScope.has(scope)) {
+                this.currentGlobalScope.delete(scope);
+                stack.push(scope);
+            }
+        }
+        super.visitBlockStatement(block);
+        for (let scope of stack) {
+            this.currentGlobalScope.add(scope);
+        }
+        return ;
+    }
+    visitFunctionDeclaration(decl) {  // declaring parent function and then after its scope ends removing parent
+        if (!this.parent) this.parent = decl.identifier.value;
+        this.funcStack.push(decl.identifier.value);
+        let localParams = [];
+        localParams = this.getParams(decl.params);
+        for (let param of localParams) this.globalParams.add(param)
         super.visitFunctionDeclaration(decl);
-        this.parent = null; // end of scope of parent function 
-        this.currentFuntionScope = { params: [], variables: [], name: null };
+        this.funcStack.pop();
+        for (let param of localParams) {
+            this.globalParams.delete(param);
+        }
+        this.parent = null;
     }
     visitVariableDeclarator(n) {
-        if (n.init.type === 'CallExpression') {   // case - const z = y() calling global function through const z
-            if (this.callExpression.includes(n.init.callee.value)) {
-                if (!this.scopeVariables[n.id.value]) this.scopeVariables[n.id.value] = [];
-                this.scopeVariables[n.id.value].push(n.init.callee.value);
-            }
-        }
+        if (!this.parent) this.parent = n.id.value;
+        this.funcStack.push(n.id.value);
         super.visitVariableDeclarator(n)
+        this.funcStack.pop();
+        this.parent = null;
     }
     visitIdentifier(n) {  // if a global variable is changed inside any function => (To do - add local Scope) 
-        if (this.currentFuntionScope.name) {
-            const isParampresent = this.currentFuntionScope.params.includes(n.value);
-            if (isParampresent) {
-                super.visitIdentifier(n);
-                return;
-            }
-        }
-        if (this.parent && (this.assignmentExpression.includes(n.value) || this.callExpression.includes(n.value))) {
-            this.scopeVariables[this.parent].push(n.value);
-        }
         super.visitIdentifier(n);
     }
-    visitExpression(n) {
-        if (!this.parentVariable && n.left) {  // case => x = {f : func()}
-            this.parentVariable = n.left.value;
-            this.scopeVariables[this.parentVariable] = [];
-        }
-        if (n.type === 'AssignmentExpression' && n.right?.type === 'CallExpression') {  // z = y() calling a global func and storing its value in a variable 
-            if (this.callExpression.includes(n.right.callee.value)) {
-                this.scopeVariables[n.left.value].push(n.right.callee.value);
+    visitAssignmentExpression(n) {
+        if (this.currentGlobalScope.has(n.left.value)) {
+            if (!this.scopeVariables[n.left.value])
+                this.scopeVariables[n.left.value] = []
+            if (this.funcStack.length) {
+                this.scopeVariables[n.left.value].push(this.funcStack[0]);
             }
+            else this.scopeVariables[n.left.value].push('global');
         }
-        super.visitExpression(n)
-        this.parentVariable = null;
+        if (this.currentGlobalScope.has(n.right.value)) {
+            if (!this.scopeVariables[n.right.valuet])
+                this.scopeVariables[n.right.value] = []
+            if (this.funcStack.length) {
+                this.scopeVariables[n.right.value].push(this.funcStack[0]);
+            }
+            else this.scopeVariables[n.right.value].push('global');
+        }
+        super.visitAssignmentExpression(n);
     }
     visitCallExpression(n) {
-        if (this.parentVariable) {  // z = {f : func() } z : [func]
-            this.scopeVariables[this.parentVariable].push(n.callee.value)
-        }
-        else if (this.parent) {
-            this.scopeVariables[this.parent].push(n.callee.value)
+        if (this.currentGlobalScope.has(n.callee.value)) {  // z = {f : func() } z : [func]
+            if (!this.scopeVariables[n.callee.value]) this.scopeVariables[n.callee.value] = []
+            if (this.funcStack.length) {
+                this.scopeVariables[n.callee.value].push(this.funcStack[0]);
+            }
+            else this.scopeVariables[n.callee.value].push('global');
         }
         super.visitCallExpression(n);
     }
@@ -77,8 +95,8 @@ class RelationClass extends Visitor {
     }
 }
 
-function getRelations(module, callExpression, assignmentExpression) {  // base function creates instance
-    const visitor = new RelationClass(callExpression, assignmentExpression);
+function getRelations(module, globalScopes) {  // base function creates instance
+    const visitor = new RelationClass(globalScopes);
     visitor.visitProgram(module);
     console.log(visitor.getScopes())
 }

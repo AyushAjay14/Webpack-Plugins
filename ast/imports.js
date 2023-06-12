@@ -54,7 +54,6 @@ function getSpecifiers(specifier){
                 local: null
             }
     }
-  return null;
 }
 exports.getImports = getImports;
 exports.default = getImports;

@@ -1,48 +1,39 @@
 const {Visitor} = require('@swc/core/Visitor');
 
 class ExpressionClass extends Visitor{
-    constructor(callExpression , assignmentExpression, functionDeclaration){
+    constructor(globalScopes){
         super();
-        this.callExpression = callExpression;
-        this.assignmentExpression = assignmentExpression;
-        this.functionDeclaration = functionDeclaration;
+       this.globalScopes = globalScopes;
     }
-    getExpressions(){
-        return {calls : this.callExpression , assignment: this.assignmentExpression};
+    getglobalScopes() {
+        return this.globalScopes
     }
     visitVariableDeclarator(n){
-        this.assignmentExpression.push(n.id.value);
-        // return ;
-        super.visitVariableDeclarator(n)
-    }
-    visitExpression(n){
-        if(n.type === 'CallExpression'){
-            if(n.callee)this.callExpression.push(n.callee.value);
-        }
-        else if(n.type === 'AssignmentExpression'){
-            if(n.left) this.assignmentExpression.push(n.left.value);
-        }
+        this.globalScopes.push(n.id.value);
         return ;
-        super.visitExpression(n)
     }
     visitFunctionDeclaration(decl){
-        this.functionDeclaration.push(decl.identifier.value);
+        this.globalScopes.push(decl.identifier.value);
         return ;
     }
 }
 
-function getExpressions(stmt , callExpression , assignmentExpression , functionDeclaration){
-    const visitor = new ExpressionClass(callExpression , assignmentExpression , functionDeclaration);
-    visitor.visitExpression(stmt);
-}
-function getFunctionDeclaration(decl ,  callExpression , assignmentExpression , functionDeclaration){
-    const visitor = new ExpressionClass(callExpression,assignmentExpression, functionDeclaration);
+function getFunctionDeclaration(decl , globalScopes){
+    const visitor = new ExpressionClass(globalScopes);
     visitor.visitFunctionDeclaration(decl);
+    return visitor.getglobalScopes();
 }
-function getVariableDeclaration(decl ,  callExpression , assignmentExpression , functionDeclaration){
-    const visitor = new ExpressionClass(callExpression,assignmentExpression, functionDeclaration);
+function getVariableDeclaration(decl , globalScopes){
+    const visitor = new ExpressionClass(globalScopes);
     visitor.visitVariableDeclarator(decl.declarations[0]);
+    return visitor.getglobalScopes();
 }
-exports.getExpressions = getExpressions;
+function getLocalVariables(stmts){
+    const globalScopes = [];
+    const visitor = new ExpressionClass(globalScopes);
+    visitor.visitStatements(stmts);
+    return globalScopes;
+  }
 exports.getFunctionDeclaration = getFunctionDeclaration;
 exports.getVariableDeclaration = getVariableDeclaration;
+exports.getLocalVariables = getLocalVariables;

@@ -22,6 +22,13 @@ export function exp(x){
     y=10;
     kc();
 }
+const z = {
+    a:{
+        b:{
+            c: x(),
+        }
+    }
+}
 let arrow = ()=>{
     y();
     kc+=10;

@@ -96,6 +96,15 @@ class RelationClass extends Visitor {
         }
         super.visitCallExpression(n);
     }
+    visitSpreadElement(e){
+        if(e.arguments.value && this.currentGlobalScope.has(e.arguments.value)){
+            if (!this.scopeVariables[e.arguments.value]) this.scopeVariables[e.arguments.value] = []
+            if(this.funcStack.length) this.scopeVariables[e.arguments.value].push(this.funcStack[0])
+            else this.scopeVariables[e.arguments.value].push('global');
+        }
+        e.arguments = this.visitExpression(e.arguments);
+        return e;
+    }
     getParams(paramsArr) {   // get parameters of a function 
         const params = [];
         paramsArr.forEach(element => {

@@ -6,7 +6,7 @@ function x(){
 }
 let kc = 10;
 function y(kc){
-    let x = 10;
+    let x = 15;
     kc+=10;
     function z(){
         let v =10;

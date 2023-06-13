@@ -71,8 +71,12 @@ class RelationClass extends Visitor {
             if (this.funcStack.length) {
                 this.scopeVariables[n.right.value].push(this.funcStack[0]);
             }
-            else this.scopeVariables[n.right.value].push('global');
         }
+            if (n.right.type === 'CallExpression') { // handling x = f(y) x is a global scope and x -> f and y 
+                const funcArgs = this.getFuncArgs(n.right);
+                funcArgs ? funcArgs.forEach(e => this.scopeVariables[n.left.value].push(e)) : ""
+                this.scopeVariables[n.left.value].push(n.right.callee.value);
+            }
         if (this.currentGlobalScope.has(n.left.value) && this.currentGlobalScope.has(n.right.value)) {
             if (!this.scopeVariables[n.left.value])
                 this.scopeVariables[n.left.value] = []
@@ -83,7 +87,7 @@ class RelationClass extends Visitor {
         super.visitAssignmentExpression(n);
     }
     visitCallExpression(n) {  // handling all functions calls
-        if (this.currentGlobalScope.has(n.callee.value)) {  
+        if (this.currentGlobalScope.has(n.callee.value)) {
             if (!this.scopeVariables[n.callee.value]) this.scopeVariables[n.callee.value] = []
             if (this.funcStack.length) {
                 this.scopeVariables[n.callee.value].push(this.funcStack[0]);
@@ -98,6 +102,12 @@ class RelationClass extends Visitor {
             params.push(element.pat.value)
         });
         return params;
+    }
+    getFuncArgs(right){
+        const funcArgArr = right.arguments;
+        const funcArgs = []
+        funcArgArr.forEach(e => funcArgs.push(e.expression.value));
+        return funcArgs;
     }
 }
 

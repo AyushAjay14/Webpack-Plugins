@@ -28,12 +28,5 @@ function getVariableDeclaration(decl , globalScopes){
     visitor.visitVariableDeclarator(decl.declarations[0]);
     return visitor.getglobalScopes();
 }
-function getLocalVariables(stmts){
-    const globalScopes = [];
-    const visitor = new ExpressionClass(globalScopes);
-    visitor.visitStatements(stmts);
-    return globalScopes;
-  }
 exports.getFunctionDeclaration = getFunctionDeclaration;
 exports.getVariableDeclaration = getVariableDeclaration;
-exports.getLocalVariables = getLocalVariables;

@@ -7,7 +7,7 @@ const fn2 = () => {
 function f(y){
     y = z;
     function f2(){
-        f(x);
+        // f(x);
     }
 }
 x = f(y)

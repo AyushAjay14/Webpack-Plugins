@@ -13,7 +13,7 @@ class RelationClass extends Visitor {
     getScopes() {
         return this.scopeVariables
     }
-    visitBlockStatement(block) {
+    visitBlockStatement(block) {  // scope of a function block
         let localvar = getLocalVariables(block.stmts);
         let stack = [];
         for (let scope of localvar) {
@@ -32,11 +32,10 @@ class RelationClass extends Visitor {
         for (let scope of stack) {
             this.currentGlobalScope.add(scope);
         }
-        return ;
     }
     visitFunctionDeclaration(decl) {  // declaring parent function and then after its scope ends removing parent
         if (!this.parent) this.parent = decl.identifier.value;
-        this.funcStack.push(decl.identifier.value);
+        this.funcStack.push(decl.identifier.value); // adding function call stack 
         let localParams = [];
         localParams = this.getParams(decl.params);
         for (let param of localParams) this.globalParams.add(param)
@@ -49,15 +48,15 @@ class RelationClass extends Visitor {
     }
     visitVariableDeclarator(n) {
         if (!this.parent) this.parent = n.id.value;
-        this.funcStack.push(n.id.value);
-        super.visitVariableDeclarator(n)
+        this.funcStack.push(n.id.value); // adding variable call stack for arrow functions 
+        super.visitVariableDeclarator(n);
         this.funcStack.pop();
         this.parent = null;
     }
-    visitIdentifier(n) {  // if a global variable is changed inside any function => (To do - add local Scope) 
+    visitIdentifier(n) {  // if a global variable is changed inside any function
         super.visitIdentifier(n);
     }
-    visitAssignmentExpression(n) {
+    visitAssignmentExpression(n) {  // for handling x = func() of x = y both in global scopes 
         if (this.currentGlobalScope.has(n.left.value)) {
             if (!this.scopeVariables[n.left.value])
                 this.scopeVariables[n.left.value] = []
@@ -67,17 +66,24 @@ class RelationClass extends Visitor {
             else this.scopeVariables[n.left.value].push('global');
         }
         if (this.currentGlobalScope.has(n.right.value)) {
-            if (!this.scopeVariables[n.right.valuet])
+            if (!this.scopeVariables[n.right.value])
                 this.scopeVariables[n.right.value] = []
             if (this.funcStack.length) {
                 this.scopeVariables[n.right.value].push(this.funcStack[0]);
             }
             else this.scopeVariables[n.right.value].push('global');
         }
+        if (this.currentGlobalScope.has(n.left.value) && this.currentGlobalScope.has(n.right.value)) {
+            if (!this.scopeVariables[n.left.value])
+                this.scopeVariables[n.left.value] = []
+            if (!this.scopeVariables[n.right.value])
+                this.scopeVariables[n.right.value] = []
+            this.scopeVariables[n.left.value].push(n.right.value);
+        }
         super.visitAssignmentExpression(n);
     }
-    visitCallExpression(n) {
-        if (this.currentGlobalScope.has(n.callee.value)) {  // z = {f : func() } z : [func]
+    visitCallExpression(n) {  // handling all functions calls
+        if (this.currentGlobalScope.has(n.callee.value)) {  
             if (!this.scopeVariables[n.callee.value]) this.scopeVariables[n.callee.value] = []
             if (this.funcStack.length) {
                 this.scopeVariables[n.callee.value].push(this.funcStack[0]);

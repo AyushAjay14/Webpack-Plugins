@@ -38,7 +38,6 @@ class ExportClass extends Visitor{
         if(n.type === 'FunctionExpression'){
             this.Exports.members.push({
                 orig: n.identifier.value,
-                local: 'DEFAULT',
               },)
         }
         super.visitDefaultDeclaration(n)
@@ -48,7 +47,7 @@ class ExportClass extends Visitor{
 function getExports(module){
     const visitor = new ExportClass();
     visitor.visitProgram(module)
-    return visitor.getExportArr();
+    return visitor.getExportArr().members;
 } 
 function getSpecifiers(specifier){
     if(!specifier) return ;
@@ -56,7 +55,6 @@ function getSpecifiers(specifier){
         const orig = specifier.orig.value;
         return{
             orig,
-            local: specifier.exported?.value || 'NAMED_EXPORT'
         }
     }
   return null;

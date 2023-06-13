@@ -9,9 +9,14 @@ class RelationClass extends Visitor {
         this.scopeVariables = {};
         this.scopeVariables = {};
         this.globalParams = new Set();
+        this.DynamicImports = {};
+        this.dynamic = {parent: null , import : false};
     }
     getScopes() {
         return this.scopeVariables
+    }
+    getDynamicImportObj(){
+        return this.DynamicImports;
     }
     visitBlockStatement(block) {  // scope of a function block
         let localvar = getLocalVariables(block.stmts);
@@ -47,11 +52,11 @@ class RelationClass extends Visitor {
         this.parent = null;
     }
     visitVariableDeclarator(n) {
-        if (!this.parent) this.parent = n.id.value;
+        if(!this.dynamic.parent && (n.init.type === 'CallExpression' || n.init.type === 'ArrowFunctionExpression')) this.dynamic.parent = n.id.value;
         this.funcStack.push(n.id.value); // adding variable call stack for arrow functions 
         super.visitVariableDeclarator(n);
         this.funcStack.pop();
-        this.parent = null;
+        this.dynamic.parent = null;
     }
     visitIdentifier(n) {  // if a global variable is changed inside any function
         super.visitIdentifier(n);
@@ -87,6 +92,11 @@ class RelationClass extends Visitor {
         super.visitAssignmentExpression(n);
     }
     visitCallExpression(n) {  // handling all functions calls
+        if(this.dynamic.parent){
+            if(n.callee.type === 'Import'){
+                this.dynamic.import = true;
+            }
+        }
         if (this.currentGlobalScope.has(n.callee.value)) {
             if (!this.scopeVariables[n.callee.value]) this.scopeVariables[n.callee.value] = []
             if (this.funcStack.length) {
@@ -95,6 +105,10 @@ class RelationClass extends Visitor {
             else this.scopeVariables[n.callee.value].push('global');
         }
         super.visitCallExpression(n);
+        if(this.dynamic.import){
+            // this.dynamic.parent = null;   
+            this.dynamic.import = false;
+        }
     }
     visitSpreadElement(e){
         if(e.arguments.value && this.currentGlobalScope.has(e.arguments.value)){
@@ -104,6 +118,15 @@ class RelationClass extends Visitor {
         }
         e.arguments = this.visitExpression(e.arguments);
         return e;
+    }
+    visitStringLiteral(n){
+        const importName = n.value;
+        if(this.dynamic.parent && this.dynamic.import){
+            if(!this.DynamicImports[importName])this.DynamicImports[importName] = [];
+            if(this.funcStack.length) this.DynamicImports[importName].push(this.funcStack[0]);
+            else this.DynamicImports[importName].push('global');
+        }
+        return n;
     }
     getParams(paramsArr) {   // get parameters of a function 
         const params = [];
@@ -121,8 +144,10 @@ class RelationClass extends Visitor {
 }
 
 function getRelations(module, globalScopes) {  // base function creates instance
+    const DynamicImports = {};
     const visitor = new RelationClass(globalScopes);
     visitor.visitProgram(module);
+    console.log(visitor.getDynamicImportObj());
     console.log(visitor.getScopes())
 }
 exports.getRelations = getRelations;

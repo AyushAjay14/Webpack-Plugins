@@ -13,7 +13,7 @@ class DynamicImportClass extends Visitor{
         if(!this.dynamic.parent && (n.init.type === 'CallExpression' || n.init.type === 'ArrowFunctionExpression')) this.dynamic.parent = n.id.value;
         n.id = this.visitPattern(n.id);
         n.init = this.visitOptionalExpression(n.init);
-        this.parent = null;
+        this.dynamic.parent = null;
         return n;
     }
     visitCallExpression(n){
@@ -28,15 +28,16 @@ class DynamicImportClass extends Visitor{
             n.arguments = this.visitArguments(n.arguments);
         }
         if(this.dynamic.import){
-            this.dynamic.parent = null;
+            // this.dynamic.parent = null;   
             this.dynamic.import = false;
         }
         return n;
     }
     visitStringLiteral(n){
+        const importName = n.value;
         if(this.dynamic.parent && this.dynamic.import){
-            if(!this.DynamicImports[n.value])this.DynamicImports[n.value] = [];
-            this.DynamicImports[n.value].push(this.dynamic.parent);
+            if(!this.DynamicImports[importName])this.DynamicImports[importName] = [];
+            this.DynamicImports[importName].push(this.dynamic.parent);
         }
         return n;
     }

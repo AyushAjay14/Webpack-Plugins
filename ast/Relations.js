@@ -1,22 +1,17 @@
 const { Visitor } = require('@swc/core/Visitor')
 const { getLocalVariables } = require('./getScope')
 class RelationClass extends Visitor {
-    constructor(globalScopes) {
+    constructor(globalScopes, importDetails) {
         super();
-        this.currentGlobalScope = new Set(globalScopes);
-        this.funcStack = [];
+        this.currentGlobalScope = new Set(globalScopes); // all the global scopes - variable, functions 
+        this.funcStack = []; // stack to store function calls inside a block 
         this.parent = null;
-        this.scopeVariables = {};
-        this.scopeVariables = {};
-        this.globalParams = new Set();
-        this.DynamicImports = {};
-        this.dynamic = {parent: null , import : false};
+        this.importDetails = importDetails;
+        this.globalParams = new Set(); // all the global parameters inside a block function
+        this.checkDynamicObj = { parent: null, import: false }; // check to find out dynamic import
     }
     getScopes() {
         return this.scopeVariables
-    }
-    getDynamicImportObj(){
-        return this.DynamicImports;
     }
     visitBlockStatement(block) {  // scope of a function block
         let localvar = getLocalVariables(block.stmts);
@@ -52,79 +47,96 @@ class RelationClass extends Visitor {
         this.parent = null;
     }
     visitVariableDeclarator(n) {
-        if(!this.dynamic.parent && (n.init.type === 'CallExpression' || n.init.type === 'ArrowFunctionExpression')) this.dynamic.parent = n.id.value;
+        if (!this.checkDynamicObj.parent && (n.init?.type === 'CallExpression' || n.init?.type === 'ArrowFunctionExpression')) this.checkDynamicObj.parent = n.id.value;
         this.funcStack.push(n.id.value); // adding variable call stack for arrow functions 
         super.visitVariableDeclarator(n);
         this.funcStack.pop();
-        this.dynamic.parent = null;
-    }
-    visitIdentifier(n) {  // if a global variable is changed inside any function
-        super.visitIdentifier(n);
+        this.checkDynamicObj.parent = null;
     }
     visitAssignmentExpression(n) {  // for handling x = func() of x = y both in global scopes 
         if (this.currentGlobalScope.has(n.left.value)) {
-            if (!this.scopeVariables[n.left.value])
-                this.scopeVariables[n.left.value] = []
             if (this.funcStack.length) {
                 this.scopeVariables[n.left.value].push(this.funcStack[0]);
             }
             else this.scopeVariables[n.left.value].push('global');
         }
         if (this.currentGlobalScope.has(n.right.value)) {
-            if (!this.scopeVariables[n.right.value])
-                this.scopeVariables[n.right.value] = []
             if (this.funcStack.length) {
                 this.scopeVariables[n.right.value].push(this.funcStack[0]);
             }
         }
+        if (this.currentGlobalScope.has(n.left.value)) {
             if (n.right.type === 'CallExpression') { // handling x = f(y) x is a global scope and x -> f and y 
                 const funcArgs = this.getFuncArgs(n.right);
-                funcArgs ? funcArgs.forEach(e => this.scopeVariables[n.left.value].push(e)) : ""
+                funcArgs ? funcArgs.forEach(arg =>{
+                    if(this.currentGlobalScope.has(arg)){
+                        this.scopeVariables[arg].push(n.left.value);
+                    }
+                    this.scopeVariables[n.left.value].push(arg)
+                }) : ""
                 this.scopeVariables[n.left.value].push(n.right.callee.value);
             }
+        }
         if (this.currentGlobalScope.has(n.left.value) && this.currentGlobalScope.has(n.right.value)) {
-            if (!this.scopeVariables[n.left.value])
-                this.scopeVariables[n.left.value] = []
-            if (!this.scopeVariables[n.right.value])
-                this.scopeVariables[n.right.value] = []
             this.scopeVariables[n.left.value].push(n.right.value);
         }
         super.visitAssignmentExpression(n);
     }
     visitCallExpression(n) {  // handling all functions calls
-        if(this.dynamic.parent){
-            if(n.callee.type === 'Import'){
-                this.dynamic.import = true;
+        if (this.checkDynamicObj.parent) {
+            if (n.callee.type === 'Import') {
+                this.checkDynamicObj.import = true;
             }
         }
-        if (this.currentGlobalScope.has(n.callee.value)) {
-            if (!this.scopeVariables[n.callee.value]) this.scopeVariables[n.callee.value] = []
-            if (this.funcStack.length) {
-                this.scopeVariables[n.callee.value].push(this.funcStack[0]);
+        let calleeName = null;
+        if(n.callee.type === 'MemberExpression'){
+            calleeName = n.callee.object?.value;
+        }
+        else calleeName = n.callee.value;
+        const funcArgs = this.getFuncArgs(n); // handling if in any call expression argument is a global parameter
+                funcArgs ? funcArgs.forEach(arg =>{
+                    if(this.currentGlobalScope.has(arg)){
+                        if(this.funcStack.length) this.scopeVariables[arg].push(this.funcStack[0]);
+                    }
+                }) : ""
+        if (this.currentGlobalScope.has(calleeName)) {
+            if(this.scopeVariables[calleeName].includes(this.funcStack[0])){
+                return ;
             }
-            else this.scopeVariables[n.callee.value].push('global');
+            if (this.funcStack.length) {
+                this.scopeVariables[calleeName].push(this.funcStack[0]);
+            }
+            else this.scopeVariables[calleeName].push('global');
         }
         super.visitCallExpression(n);
-        if(this.dynamic.import){
-            // this.dynamic.parent = null;   
-            this.dynamic.import = false;
+        if (this.checkDynamicObj.import) {
+            this.checkDynamicObj.import = false;
         }
     }
-    visitSpreadElement(e){
-        if(e.arguments.value && this.currentGlobalScope.has(e.arguments.value)){
-            if (!this.scopeVariables[e.arguments.value]) this.scopeVariables[e.arguments.value] = []
-            if(this.funcStack.length) this.scopeVariables[e.arguments.value].push(this.funcStack[0])
+    visitSpreadElement(e) {
+        if (e.arguments.value && this.currentGlobalScope.has(e.arguments.value)) {
+            if (this.funcStack.length) this.scopeVariables[e.arguments.value].push(this.funcStack[0])
             else this.scopeVariables[e.arguments.value].push('global');
         }
         e.arguments = this.visitExpression(e.arguments);
         return e;
     }
-    visitStringLiteral(n){
+    visitStringLiteral(n) {
         const importName = n.value;
-        if(this.dynamic.parent && this.dynamic.import){
-            if(!this.DynamicImports[importName])this.DynamicImports[importName] = [];
-            if(this.funcStack.length) this.DynamicImports[importName].push(this.funcStack[0]);
-            else this.DynamicImports[importName].push('global');
+        if (this.checkDynamicObj.parent && this.checkDynamicObj.import) {
+            if (this.scopeVariables[this.importDetails.get(importName)]) {
+                if (this.funcStack.length) this.scopeVariables[this.importDetails.get(importName)].push(this.funcStack[0]);
+                else this.scopeVariables[this.importDetails.get(importName)].push('global');
+            }
+            else if (this.scopeVariables[importName]) {
+                if (this.funcStack.length) this.scopeVariables[importName].push(this.funcStack[0]);
+                else this.scopeVariables[importName].push('global');
+            }
+            else {
+                this.scopeVariables[importName] = [];
+                if (this.funcStack.length) this.scopeVariables[importName].push(this.funcStack[0]);
+                else this.scopeVariables[importName].push('global');
+            }
         }
         return n;
     }
@@ -135,7 +147,7 @@ class RelationClass extends Visitor {
         });
         return params;
     }
-    getFuncArgs(right){
+    getFuncArgs(right) {
         const funcArgArr = right.arguments;
         const funcArgs = []
         funcArgArr.forEach(e => funcArgs.push(e.expression.value));
@@ -143,11 +155,19 @@ class RelationClass extends Visitor {
     }
 }
 
-function getRelations(module, globalScopes) {  // base function creates instance
-    const DynamicImports = {};
-    const visitor = new RelationClass(globalScopes);
+function getRelations(module, globalScopes, imports) {  // base function creates instance
+    const importDetails = new Map();
+    for (let imprt of imports) {
+        if(imprt.source[imprt.source.length-3] !== '.') imprt.source = imprt.source + '.js'
+        importDetails.set(imprt.source , imprt.local);
+    }
+    const scopeVariables = {};
+    for (let scope of globalScopes) {
+        scopeVariables[scope] = [];
+    }
+    const visitor = new RelationClass(globalScopes, importDetails);
+    visitor.scopeVariables = scopeVariables;
     visitor.visitProgram(module);
-    console.log(visitor.getDynamicImportObj());
     console.log(visitor.getScopes())
 }
 exports.getRelations = getRelations;

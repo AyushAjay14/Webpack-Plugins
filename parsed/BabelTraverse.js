@@ -22,7 +22,7 @@ async function getGlobalScope() {
     else if (exp.type === "VariableDeclaration") getVariableDeclaration(exp, globalScopes);
   }
   module = await swc.parse(data);
-  getRelations(module, globalScopes);
+  getRelations(module, globalScopes , imports);
 }
 
 getGlobalScope();

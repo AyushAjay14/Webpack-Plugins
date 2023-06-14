@@ -5,7 +5,7 @@ const dynamicallyNamedImportedWebpackChunk = dynamicImportLib(
     { option: DEFAULT_DYNAMIC_OPTION }
 );
 const x = 10;
-function a(){
+function hello(){
     const getImports = dynamicImportLib(
         () => import('../../src/a.js').then(() => import('./b').then(() => import('./anything').then("heloo world"))),
         { option: DEFAULT_DYNAMIC_OPTION }

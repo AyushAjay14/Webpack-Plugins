@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "outDir": "build", // where to put the TS files
+    "target": "es2022", // which level of JS support to target
+    "types": [],
+    "moduleResolution": "nodenext",
+    "jsx": "react",
+    "declaration": true
+  },
+  "include": ["ast"] // which files to compile
+}

@@ -4,10 +4,10 @@ const { getImports } = require('../ast/imports');
 const { getExports } = require('../ast/exports');
 const { getRelations } = require('../ast/Relations');
 const { getFunctionDeclaration, getVariableDeclaration } = require('../ast/expression')
-const path = __dirname + '/../ast/tests/test4.js'
+const path = __dirname + '/../ast/tests/test3.js'
 const data = fs.readFileSync(path, { encoding: 'utf8', flag: 'r' });
 const globalScopes = [];
-let imports, exprts = [];
+let imports = [];
 async function getGlobalScope() {
   let module = await swc.parse(data);
   imports = getImports(module);

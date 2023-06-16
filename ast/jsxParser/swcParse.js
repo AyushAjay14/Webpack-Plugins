@@ -4,7 +4,7 @@ const { getImports } = require('../imports');
 const { getExports } = require('../exports');
 const { getFunctionDeclaration, getVariableDeclaration } = require('../expression')
 const { getRelations } = require('../Relations');
-const data = fs.readFileSync(__dirname + '/app.jsx', { encoding: 'utf8', flag: 'r' })
+const data = fs.readFileSync(__dirname + '/typescriptTests/test-9.tsx', { encoding: 'utf8', flag: 'r' })
 const globalScopes = [];
 let imports = [];
 async function jsxParser() {

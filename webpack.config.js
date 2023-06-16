@@ -41,10 +41,7 @@ module.exports = ({mode , presets}= {mode: "none" , presets:[]})=>{
                 }
           ]
         },
-      plugins: [new CircularDependencyPlugin({ exclude: /a\.js|node_modules/, onStart({compilation}){
-        // fs.writeFile('compilation.txt' , compilation , (err)=> console.log(err));
-        // console.log("compilation has started: " , compilation);
-      }}),  new webpackPlugin()]
+      plugins: [ new funcTofuncPlugin()]
   },
   // ModeConfig(mode),
   // PresetConfig({mode , presets})

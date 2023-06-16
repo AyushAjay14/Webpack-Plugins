@@ -106,7 +106,11 @@ class RelationClass extends Visitor {
             if (this.funcStack.length) {
                 this.scopeVariables[calleeName].push(this.funcStack[0]);
             }
-            else this.scopeVariables[calleeName].push('global');
+            else{
+                if(!this.scopeVariables[calleeName].includes('global')){
+                    this.scopeVariables[calleeName].push('global');
+                }
+            }
         }
         super.visitCallExpression(n);
         if (this.checkDynamicObj.import) {
